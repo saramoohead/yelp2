@@ -1,53 +1,16 @@
 require 'rails_helper'
 
-feature 'restaurants' do
-  context 'no restaurants have been added' do
-    scenario 'should display a prompt to add a restaurant' do
-      visit '/restaurants'
-      expect(page).to have_content 'No restaurants yet'
-      expect(page).to have_link 'Add a restaurant'
-    end
-  end
+feature 'reviewing restaurants' do
+  context 'when restaurants have been added' do
+    let!(:kfc){Restaurant.create(name:'KFC')}
 
-  context 'restaurants have been added' do
-    before do
-      Restaurant.create(name: 'KFC')
-    end
-
-    scenario 'display restaurants' do
+    scenario 'display all restaurants' do
       visit '/restaurants'
       expect(page).to have_content('KFC')
       expect(page).not_to have_content('No restaurants yet')
     end
-  end
-
-  context 'creating restaurants' do
-    scenario 'prompts user to fill out a form, then displays the new restaurant' do
-      visit '/restaurants'
-      click_link 'Add a restaurant'
-      fill_in 'Name', with: 'KFC'
-      click_button 'Create Restaurant'
-      expect(page).to have_content 'KFC'
-      expect(current_path).to eq '/restaurants'
-    end
-
-    context 'an invalid restaurant' do
-      it 'does not let you submit a name that is too short' do
-        visit '/restaurants'
-        click_link 'Add a restaurant'
-        fill_in 'Name', with: 'kf'
-        click_button 'Create Restaurant'
-        expect(page).not_to have_css 'h2', text: 'kf'
-        expect(page).to have_content 'error'
-      end
-    end
-  end
-
-  context 'viewing restaurants' do
-
-    let!(:kfc){Restaurant.create(name:'KFC')}
-
-    scenario 'lets a user view a restaurant' do
+    
+    scenario 'let a user view a restaurant' do
       visit '/restaurants'
       click_link 'KFC'
       expect(page).to have_content 'KFC'
@@ -56,11 +19,41 @@ feature 'restaurants' do
 
   end
 
-  context 'editing restaurants' do
+  context 'if no restaurants have been added' do
+    scenario 'display a prompt to add a restaurant' do
+      visit '/restaurants'
+      expect(page).to have_content 'No restaurants yet'
+      expect(page).to have_link 'Add a restaurant'
+    end
+  end
+
+  context 'user can add a restaurant' do
+    scenario 'by filling out a form' do
+      visit '/restaurants'
+      click_link 'Add a restaurant'
+      fill_in 'Name', with: 'KFC'
+      click_button 'Create Restaurant'
+      expect(page).to have_content 'KFC'
+      expect(current_path).to eq '/restaurants'
+    end
+
+    scenario 'that has a valid length of restaurant name' do
+        visit '/restaurants'
+        click_link 'Add a restaurant'
+        fill_in 'Name', with: 'kf'
+        click_button 'Create Restaurant'
+        expect(page).not_to have_css 'h2', text: 'kf'
+        expect(page).to have_content 'error'
+    end
+  end
+
+
+
+  context 'user can edit restaurants' do
 
     before {Restaurant.create name: 'KFC'}
 
-    scenario 'let a user edit a restaurant' do
+    scenario 'by editing the details' do
       visit '/restaurants'
       click_link 'Edit KFC'
       fill_in 'Name', with: 'Kentucky Fried Chicken'
@@ -71,11 +64,11 @@ feature 'restaurants' do
 
   end
 
-  context 'deleting restaurants' do
+  context 'user can delete restaurants' do
 
     before { Restaurant.create name: 'KFC' }
 
-    scenario 'removes a restaurant when a user clicks a delete link' do
+    scenario 'by clicking the delete link' do
       visit '/restaurants'
       click_link 'Delete KFC'
       expect(page).not_to have_content 'KFC'

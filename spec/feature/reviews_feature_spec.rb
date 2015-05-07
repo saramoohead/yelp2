@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-feature 'revieweing' do
+feature 'reviewing' do
   before {Restaurant.create name: 'KFC'}
 
   scenario 'allows users to leave a review using a form' do
