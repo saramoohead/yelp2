@@ -19,31 +19,60 @@ feature 'reviewing restaurants' do
 
   end
 
-  context 'if no restaurants have been added' do
-    scenario 'display a prompt to add a restaurant' do
+  context 'if not signed in, user cannot' do
+    before {Restaurant.create name: 'KFC'}
+    scenario 'create restaurant' do
       visit '/restaurants'
-      expect(page).to have_content 'No restaurants yet'
-      expect(page).to have_link 'Add a restaurant'
+      expect(page).not_to have_link 'Add a restaurant'
+    end
+    scenario 'edit restaurant' do
+      visit '/restaurants'
+      expect(page).not_to have_link 'Edit KFC'
+    end
+    scenario 'delete restaurant' do
+      visit '/restaurants'
+      expect(page).not_to have_link 'Delete KFC'
     end
   end
 
-  context 'user can add a restaurant' do
-    scenario 'by filling out a form' do
-      visit '/restaurants'
-      click_link 'Add a restaurant'
-      fill_in 'Name', with: 'KFC'
-      click_button 'Create Restaurant'
-      expect(page).to have_content 'KFC'
-      expect(current_path).to eq '/restaurants'
+  def user_sign_in
+    visit '/restaurants'
+    click_link('Sign up')
+    fill_in('Email', with: 'test@example.com')
+    fill_in('Password', with: 'testtest')
+    fill_in('Password confirmation', with: 'testtest')
+    click_button('Sign up')
+  end
+
+  context 'if user is signed in' do
+    before {user_sign_in}
+
+    context 'and no restaurants have been added' do
+      scenario 'display a prompt to add a restaurant' do
+        visit '/restaurants'
+        expect(page).to have_content 'No restaurants yet'
+        expect(page).to have_link 'Add a restaurant'
+      end
     end
 
-    scenario 'that has a valid length of restaurant name' do
+    context 'user can add a restaurant' do
+      scenario 'by filling out a form' do
+        visit '/restaurants'
+        click_link 'Add a restaurant'
+        fill_in 'Name', with: 'KFC'
+        click_button 'Create Restaurant'
+        expect(page).to have_content 'KFC'
+        expect(current_path).to eq '/restaurants'
+      end
+
+      scenario 'that has a valid length of restaurant name' do
         visit '/restaurants'
         click_link 'Add a restaurant'
         fill_in 'Name', with: 'kf'
         click_button 'Create Restaurant'
         expect(page).not_to have_css 'h2', text: 'kf'
         expect(page).to have_content 'error'
+      end
     end
   end
 
