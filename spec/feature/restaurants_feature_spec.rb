@@ -74,36 +74,33 @@ feature 'reviewing restaurants' do
         expect(page).to have_content 'error'
       end
     end
-  end
+  
+    context 'user can edit restaurants' do
 
+      before {Restaurant.create name: 'KFC'}
 
+      scenario 'by editing the details' do
+        visit '/restaurants'
+        click_link 'Edit KFC'
+        fill_in 'Name', with: 'Kentucky Fried Chicken'
+        click_button 'Update Restaurant'
+        expect(page).to have_content 'Kentucky Fried Chicken'
+        expect(current_path).to eq '/restaurants'
+      end
 
-  context 'user can edit restaurants' do
-
-    before {Restaurant.create name: 'KFC'}
-
-    scenario 'by editing the details' do
-      visit '/restaurants'
-      click_link 'Edit KFC'
-      fill_in 'Name', with: 'Kentucky Fried Chicken'
-      click_button 'Update Restaurant'
-      expect(page).to have_content 'Kentucky Fried Chicken'
-      expect(current_path).to eq '/restaurants'
     end
 
-  end
+    context 'user can delete restaurants' do
 
-  context 'user can delete restaurants' do
+      before { Restaurant.create name: 'KFC' }
 
-    before { Restaurant.create name: 'KFC' }
+      scenario 'by clicking the delete link' do
+        visit '/restaurants'
+        click_link 'Delete KFC'
+        expect(page).not_to have_content 'KFC'
+        expect(page).to have_content 'Restaurant deleted successfully'
+      end
 
-    scenario 'by clicking the delete link' do
-      visit '/restaurants'
-      click_link 'Delete KFC'
-      expect(page).not_to have_content 'KFC'
-      expect(page).to have_content 'Restaurant deleted successfully'
     end
-
   end
-
 end

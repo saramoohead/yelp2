@@ -1,21 +1,21 @@
 require 'rails_helper'
 
-feature 'user sign in' do
+feature 'user tracking' do
 
-  context 'user not signed in and on the homepage' do
-    it "should see a 'sign in' link and a 'sign' up link" do
+  context 'if user is not signed in' do
+    it "user should see 'sign in' and 'sign' up link" do
       visit ('/')
       expect(page).to have_link('Sign in')
       expect(page).to have_link('Sign up')
     end
 
-    it "should not see 'sign out' link" do
+    it "and user should not see 'sign out' link" do
       visit ('/')
       expect(page).not_to have_link('Sign out')
     end
   end
 
-  context "user signed in on the homepage" do
+  context "if user is signed in" do
     before do
       visit('/')
       click_link('Sign up')
@@ -25,12 +25,12 @@ feature 'user sign in' do
       click_button('Sign up')
     end
 
-    it "should see 'sign out' link" do
+    it "user should see 'sign out' link" do
       visit ('/')
       expect(page).to have_link('Sign out')
     end
 
-    it "should not see a 'sign in' link and a 'sign in' link" do
+    it "user should not see 'sign in' and 'sign in' link" do
       visit ('/')
       expect(page).not_to have_link('Sign in')
       expect(page).not_to have_link('Sign up')
